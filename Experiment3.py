@@ -54,22 +54,15 @@ CAPTION_PROMPT_TEMPLATE = (
 LANGUAGE_MAPPING = {"Deutsch": ("TITEL", "BESCHREIBUNG"), "English": ("HEADLINE", "DESCRIPTION")}
 
 # ==============================================================================
-# DATENLADE-FUNKTION (MIT DER KORREKTUR)
+# DATENLADE-FUNKTION
 # ==============================================================================
 
 def load_and_prepare_data(csv_path: str) -> Dict[str, Dict[str, str]]:
-    """Loads the CSV, cleans the lookup key, and prepares it for quick lookup."""
     try:
         df = pd.read_csv(csv_path, dtype=str).fillna("N/A")
         data_map = {}
-
-        # =================================================================
-        # HIER IST DIE KORREKTUR:
-        # .str.strip() entfernt führende/folgende Leerzeichen aus jeder ID
-        # =================================================================
         df['cleaned_t1'] = df['t1'].str.strip()
         df['lookup_key'] = df['cleaned_t1'].str.replace('/', '-', regex=False).str.split(' ').str[0]
-        
         df_unique = df.drop_duplicates(subset='lookup_key', keep='first')
         
         for _, row in df_unique.iterrows():
@@ -79,18 +72,14 @@ def load_and_prepare_data(csv_path: str) -> Dict[str, Dict[str, str]]:
                 "dimensions": row.get('T5', 'N/A'),
                 "date": row.get('T14', 'N/A')
             }
-        print(f"✅ Successfully loaded and prepared data for {len(data_map)} unique objects from CSV.")
+        print(f"✅ Successfully loaded data for {len(data_map)} unique objects from CSV.")
         return data_map
-    except FileNotFoundError:
-        print(f"❌ ERROR: CSV file not found at {csv_path}. Please check the path.")
-        return {}
     except Exception as e:
-        print(f"❌ ERROR: Could not process CSV file. Reason: {e}")
+        print(f"❌ ERROR processing CSV: {e}")
         return {}
-
 
 # ==============================================================================
-# GENERATOR-KLASSE
+# GENERATOR-KLASSE (Mit verbessertem Parser)
 # ==============================================================================
 
 class GeminiCaptionGenerator:
@@ -120,13 +109,37 @@ class GeminiCaptionGenerator:
             print(f"  Error generating description: {e}")
             return None
 
+    # =========================================================================
+    # HIER IST DER VERBESSERTE PARSER
+    # =========================================================================
     @staticmethod
-    def _parse_response(text, h_tag, d_tag):
-        lines, h, d = text.strip().split('\n'), "", ""
-        for line in lines:
-            if line.upper().startswith(f'{h_tag.upper()}:'): h = line[len(h_tag)+1:].strip()
-            elif line.upper().startswith(f'{d_tag.upper()}:'): d = line[len(d_tag)+1:].strip()
-        return h or "Untitled", d or "Description not available."
+    def _parse_response(text: str, h_tag: str, d_tag: str) -> Tuple[str, str]:
+        """
+        Parses the model's response, reliably handling multi-line descriptions.
+        """
+        headline, description = "", ""
+        in_description = False # Flag to track if we are inside a description block
+
+        for line in text.strip().split('\n'):
+            stripped_line = line.strip()
+            if not stripped_line:
+                continue
+
+            # Check for headline tag
+            if stripped_line.upper().startswith(f'{h_tag.upper()}:'):
+                headline = stripped_line[len(h_tag)+1:].strip()
+                in_description = False # A new headline stops a description block
+
+            # Check for description tag
+            elif stripped_line.upper().startswith(f'{d_tag.upper()}:'):
+                description = stripped_line[len(d_tag)+1:].strip()
+                in_description = True # Start of a description block
+            
+            # If we are already in a description, append the current line
+            elif in_description:
+                description += " " + stripped_line
+
+        return headline or "Untitled", description.strip() or "Description not available."
 
 # ==============================================================================
 # PROZESSOR-KLASSE
