@@ -1,23 +1,26 @@
-# Museum Catalogue Automation Project
+# Museum Catalogue Automation Project (V2.0 - Gemini/CSV-Enriched)
 
 ## Background
-This project was developed to support museum cataloguing using machine learning and Python-based tools. It combines image captioning powered by Google Gemini AI with data cleaning utilities for structured records. The main aim is to accelerate and standardize the documentation of technical heritage items while keeping human curators in the loop for validation.
+This project was developed to support museum cataloguing using **Google Gemini AI** and **Python-based tools**. It combines advanced image description generation, enriched with factual data from existing museum records, with robust data cleaning and file management utilities. The primary goal is to **accelerate and standardize the documentation** of technical heritage items while keeping human curators in the loop for validation and final polish.
 
-The system helps museums like the Technikmuseum manage large depots of inventoried objects, producing both structured metadata and narrative catalogue entries.
+The system features a **standalone Graphical User Interface (GUI)** for ease of use, enabling non-technical staff to load image folders and master data to produce high-quality, fact-checked narrative catalogue entries.
 
 ---
 
-## Code
+## Code and System Architecture
 
-### Files
-1. **Experiment1.py**
-   - Uses Google Gemini AI to generate descriptive captions for images.
-   - Processes images from a folder or ZIP archive.
-   - Produces structured outputs in CSV format.
+### Files and Functionality 🛠️
 
-2. **excelextract2.py**
-   - Cleans Excel/CSV files by filtering row ranges and removing empty columns.
-   - Outputs ready-to-use cleaned Excel files for catalogue records.
+The project evolved from simple scripts to a fully integrated application with five key components.
+
+| Filename | Description (Functionality) | Final Version Role |
+| :--- | :--- | :--- |
+| **`data_subset_filter_nonempty.py`** | Cleans Excel/CSV files (`Liste1.xls` / `Liste2.xls`) by extracting specific row ranges and removing columns that are entirely empty in that range. | **Data Preparation** |
+| **`merge_deduplicate_excel.py`** | **Data Integration:** Merges and dedupicates cleaned data (based on the `t1` ID column) from different source files into a single, clean `cleaned_data.csv`. | **Data Integration** |
+| **`copy_images_by_id.py`** | **File Management:** Copies required image files from various source directories into a dedicated folder, based on the `T13` file paths listed in the `cleaned_data.csv`. | **File Preparation** |
+| **`gemini_csv_enriched_generator.py`** | **AI Core Logic:** Generates museum-quality headlines and descriptions by fusing **visual analysis** of up to 4 images with **factual metadata** (Material, Date, Dimensions) retrieved from the CSV. | **Integrated** |
+| **`gemini_museum_gui.py`** | **Main Application:** A cross-platform **CustomTkinter GUI** utilizing a multi-threaded architecture (TkinterDnD) to manage the entire process, including CSV loading, Gemini API calls, and live logging, without freezing the user interface. | **Main Application** |
+
 
 ### System Requirements
 - Python 3.9 or higher
