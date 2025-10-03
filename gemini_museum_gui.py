@@ -49,14 +49,15 @@ CAPTION_PROMPT_TEMPLATE = (
     "\n- **Material:** {material}"
     "\n- **Dimensions:** {dimensions}"
     "\n\n**YOUR TASK:**"
-    "\n1. Synthesize the database information with the visual evidence from the images."
-    "\n2. Focus exclusively on the object's physical characteristics, context, and significance."
-    "\n3. **Do NOT contradict the database information.**"
-    "\n4. If a database field is marked as 'N/A', do not invent information for it."
+    "\n1. Synthesize the database information with the visual evidence to describe the object."
+    "\n2. **IMPORTANT:** Do NOT mention the specific measurements or weight (e.g., HxBxT, kg) from the 'Dimensions' field in the final description text, as this data will be displayed separately. You may, however, use qualitative descriptors like 'large', 'compact', or 'heavy'."
+    "\n3. Focus exclusively on the object's physical characteristics, context, and significance."
+    "\n4. Do NOT contradict the other database information (Date, Material)."
+    "\n5. If a database field is marked as 'N/A', do not invent information for it."
     "\n\n**Output must be in {language_name}.**"
     "\n\nProvide your response in the following format:"
     "\n{headline_tag}: [A short, compelling title]"
-    "\n{description_tag}: [The formal museum description, approx. 70-90 words.]"
+    "\n{description_tag}: [The formal museum description, approx. 70-90 words, **without stating the exact measurements**.]"
 )
 LANGUAGE_MAPPING = {"Deutsch": ("TITEL", "BESCHREIBUNG"), "English": ("HEADLINE", "DESCRIPTION")}
 
