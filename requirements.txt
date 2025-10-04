@@ -1,0 +1,9 @@
+# GUI Framework
+customtkinter
+tkinterdnd2
+
+# Data Processing and Utilities
+pandas
+python-dotenv
+Pillow
+google-genai
