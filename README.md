@@ -1,5 +1,7 @@
 Project: Image Caption Generator & Excel Extractor
 
+Step #1: pip install -r requirements.txt
+
 This repository contains two Python utilities:
 Experiment1.py – Machine learning pipeline using Google Gemini AI to generate captions for images.
 excelextract1.py/excelextract2.py – Data-cleaning tool to extract non-empty rows/columns from Excel or CSV files.
@@ -22,7 +24,7 @@ Features:
 Usage:
         Run in terminal:
 
-python Experiment1.py
+python gemini_musuem_gui.py
 
 The script will prompt you for:
 
